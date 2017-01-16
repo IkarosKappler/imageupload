@@ -26,6 +26,8 @@ Basic Setup
       </form>
 ```
 
+Javascript Uploader
+-------------------
 And here goes a basic uploader javascript using Dropzone.js:
 ```javascript
       <script>
@@ -51,5 +53,20 @@ var uploader = new Dropzone('#upload-widget', {
 }  );
 ```
 
+Create a MySQL table
+--------------------
+```sql
+CREATE TABLE IF NOT EXISTS `uploads` (
+`id` int(11) unsigned NOT NULL,
+  `filename` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `original_filename` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL,
+  `remote_address` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+  `referrer` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'The referring website.'
+) ENGINE=InnoDB AUTO_INCREMENT=203 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tracks all uploaded files.';
+```
+
+Changelog
+---------
 [2017-01-16]
  * Added the 'referrer' field to the database.
