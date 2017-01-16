@@ -1,0 +1,7 @@
+[2016-11-28]
+ * Install composer
+ * Run command
+     composer create-project laravel/database --prefer-dist
+ * Include following file in your index.php:
+     require_once( "database/bootstrap/autoload.php" );
+  

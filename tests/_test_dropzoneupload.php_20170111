@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>// hundredfourty // Test Imageupload library</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Content Description" />
+    <meta name="author" content="Ikaros Kappler" />
+
+    <meta name="date" content="2016-12-21" />
+
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/dropzone.js"></script>
+    <link rel="stylesheet" href="../css/dropzone.css" />
+    <style>
+      .my-dropzone {
+    display : flex;
+    align-items: center;
+    width       : 500px;
+    height      : 200px;
+    border      : 1px dashed #6b8cb6;
+      }
+    </style>
+  </head>
+
+  <body>
+      Select image:
+      <!-- <input id="imagefile" type="file" name="file0" accept="image/*" /> -->
+      <div id="dz0" class="my-dropzone dropzone"></div>
+      <br/>
+      <button onclick="uploadfile()">Upload (AJAX)</button>
+      <br/>
+      <div id="dz-preview-wrapper"></div>
+      <div id="out"></div>
+
+      <script>
+
+      
+      Dropzone.options.dz0 = {
+        url : '../ajax/imageupload.ajax.php',
+        acceptedFiles : 'image/*,application/pdf,.psd',
+        dictDefaultMessage : 'Put your files here',
+        previewsContainer: document.getElementById("dz-preview-wrapper"),
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 2, // MB
+        accept: function(file, done) {
+              //if (file.name == "justinbieber.jpg") {
+              //    done("Naha, you don't.");
+              //}
+              //else {
+                  console.debug('accept');
+                  done();
+              //}
+          },
+        _complete : function( file ) {
+              console.log('complete: '+file );
+            // Move preview wrapper into different container
+            //$('#dz-preview-wrapper').append( $('#dz0 .dz-preview').detach() );
+        }     
+      };
+      
+
+      /*
+      var myDropzone = $( '#dz0' ).dropzone( { url : '../ajax/imageupload.ajax.php',
+              acceptedFiles : 'image/*,application/pdf,.psd',
+              //dictDefaultMessage: "Put your files here",
+              init : function() {
+                 this.on('addedfile',function(file) { console.log('Added file: '+file+'.'); } );
+                 //$('#dz0').addClass('dropzone');
+          },
+              //thumbnail : function( file, dataURI ) {
+              //console.debug( 'thumbnail created: ' + file  );
+              //},
+              complete : function( data, result ) {
+              console.log('complete: '+data + ", result: " + result );
+              // Move preview wrapper into different container
+              //$('#dz-preview-wrapper').append( $('#dz0 .dz-preview').detach() );
+          },
+              success : function(file,serverFileName) {
+              console.debug('success: ' + serverFileName);
+              //$('#dz-preview-wrapper').append( $('#dz0 .dz-preview').detach() );
+                  }
+      } );
+      */
+
+/*
+      function uploadfile() {
+          var $input = $( '#imagefile' );
+          var files = $input[0].files[0];
+          console.debug( "files=" + JSON.stringify(files) );
+
+          var data = new FormData();
+          data.append('file0',files);
+          
+          $.ajax(
+          { url: '../ajax/imageupload.ajax.php',
+                  type: 'POST',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  processData: false, // Don't process the files
+                  contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                  success: function(data, textStatus, jqXHR) {
+                      if(typeof data.error === 'undefined') {
+                          // Success so call function to process the form
+                          console.debug('success: ' + JSON.stringify(data) );
+                          $( '#out' ).empty().html( '<code>' + JSON.stringify(data) + '</code>' );
+                      } else {
+                          // Handle errors here
+                          console.log('ERRORS: ' + data.error);
+                          $( '#out' ).empty().html( data.error );
+                      }
+              },
+                  error: function(jqXHR, textStatus, errorThrown)
+                  {
+                      // Handle errors here
+                      console.log('ERRORS: ' + textStatus);
+                      $( '#out' ).empty().html( "Error: " + textStatus );
+                      // STOP LOADING SPINNER
+                  }
+          });
+      }
+*/
+      
+      </script>
+      
+  </body>
+</html>

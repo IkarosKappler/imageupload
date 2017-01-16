@@ -1,0 +1,97 @@
+html, body {
+    background-color : #6b8cb6; /* #44658c */
+    background: -webkit-radial-gradient(#6b8cb6, #3a5474); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(#6b8cb6, #3a5474);      /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(#6b8cb6, #3a5474);    /* For Firefox 3.6 to 15 */
+    background: radial-gradient(#6b8cb6, #3a5474);         /* Standard syntax */
+}
+
+html {
+  
+}
+
+body { 
+ 
+}
+
+.hidden {
+
+}
+
+#hundredforty h1 {
+    
+}
+
+div#hundredforty {
+
+}
+
+#input-container {
+   
+}
+
+textarea#note-text {
+   
+}
+
+button#btn-sendnote {
+  
+}
+button#btn-more {
+   
+}
+
+
+#error-status {
+    color               : #c5ab8b;
+    /* text-shadow         : 4px 4px; */
+}
+
+div.note-container {
+    border              : 1px solid #44658c;
+    border-bottom-color : white;
+    border-right-color  : white;
+    border-radius       : 4px;
+    background-color    : white;
+
+}
+
+div.note-date {
+    color               : grey;
+}
+
+div.note-data {
+ 
+}
+
+
+a.boxclose{
+    color: #000000;
+       
+}
+
+.boxclose:before {
+
+}
+
+#hint {
+  
+}
+
+a.hash-tag {
+    color           : #6b8cb6;
+}
+
+
+/* Custom Theme Settings */
+a {
+    color           : #3a5474;
+}
+
+.dialog {
+    background-color : #6b8cb6; /* #44658c */
+    background: -webkit-radial-gradient(#6b8cb6, #3a5474); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(#6b8cb6, #3a5474);      /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(#6b8cb6, #3a5474);    /* For Firefox 3.6 to 15 */
+    background: radial-gradient(#6b8cb6, #3a5474);         /* Standard syntax */
+}
