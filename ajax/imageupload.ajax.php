@@ -7,12 +7,45 @@
  * @author   Ikaros Kappler
  * @date     2016-12-21
  * @modified 2017-01-11 Changed the directory structure to /uploads/<year>/<month>/.
- * @version  1.0.1
+ * @version  1.0.2
  **/
+
+
+
+require_once( "../env.inc.php" );
+$envErrors = false;
+try { mkenv( "../.env" ); }
+catch( Exception $e ) { $envErrors = true; }
+require_once( "../config.inc.php" );
+require_once( "../file.class.php" );
+
+
+$_ORIGIN_WHITELIST = explode( ',', _env('CORS_REFERERS','') );
+
+// Validate referer.
+$validReferer   = false;
+$matchedReferer = null;
+if( count($_ORIGIN_WHITELIST) > 0 && array_key_exists('HTTP_REFERER',$_SERVER) && $_SERVER['HTTP_REFERER'] ) {
+    foreach( $_ORIGIN_WHITELIST as $h) {
+        if( strpos($_SERVER['HTTP_REFERER'],$h) !== FALSE ) {
+            $validReferer   = true;
+            $matchedReferer = $h;
+        }
+    }
+    if( !$validReferer ) {
+        // SOME BROWSERS SEND A PREFLIGHT 'OPTIONS' REQUEST FIRST.
+        // VALIDATION FAILS IN THIS CASE.
+        
+        //header( 'HTTP/1.1 401 Unauthorized' );
+        //die( 'Unauthorized referer: ' . $_SERVER['HTTP_REFERER'] . '.' );
+    }
+}
 
 
 // Include the Laravel Eloquent component.
 require_once( "../database/bootstrap/autoload.php" );
+
+
 
 // Only allow max 20 uploads within 5 minutes.
 $list = DB::table('uploads')
@@ -20,7 +53,6 @@ $list = DB::table('uploads')
     ->where('created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 5 MINUTE)'))
     ->take(11)
     ->get();
-//->toArray();
 
 if( count($list) > 10 ) {
     header( 'HTTP/1.1 449 Too Many Requests' );
@@ -28,107 +60,32 @@ if( count($list) > 10 ) {
     die();
 }
 
-class Config {
-    public static function get( $name, $default = FALSE ) {
-        if( $name == 'imageupload.library' )
-            return 'imagick_raw';
-        else if( $name == 'imageupload.dimensions' )
-            return array( '64x64'   => array(64,64,false),
-                          '128x128' => array(128,128,false)
-            );
-        else if( $name == 'imageupload.path' )
-            return public_path() . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m');
-        else if( $name == 'imageupload.uribase' )
-            return public_uri() . '/uploads/' . date('Y') . '/' . date('m');
-        else if( $name == 'imageupload.fileowner' )
-            return 'www-data';
-        else if( $name == 'imageupload.filegroup' )
-            return 'www-data';
-        else if( $name == 'imageupload.newfilename' )
-            return 'custom';
-        else
-            return $default;
-    }
-}
-function public_path() {
-    return '../public';
-}
-function public_uri() {
-    return '/public';
-}
 
+/**
+ * Load laravel's ImageUpload component.
+ **/
 require_once( '../lib/Imageupload.php' );
 
 
-class File {
 
-    protected $path;
-    protected $meta;
-    
-    public static function isWritable($path) {
-        return is_writable($path);
-    }
-
-    public static function isDirectory($path) {
-        return is_dir($path);
-    }
-
-    public static function makeDirectory($path, $mode = FALSE, $_foo = FALSE) {
-        mkdir($path,$mode,true); // true -> recursive
-        chmod($path,$mode);
-    }
-
-    public function __construct($path, $uploadMeta) {
-        $this->path = $path;
-        $this->meta = $uploadMeta;
-    }
-
-    public function getPath() { return $this->path; }
-    
-    public function move( $newDir, $newName ) {
-        //echo "file exists? " . file_exists($this->path) ."\n";
-        //echo "Moving file to $newDir/$newName\n";
-        return rename( $this->path, $newDir.DIRECTORY_SEPARATOR.$newName );
-    }
-    
-    public function getMimeType() {
-        return $this->meta['type']; // NOT SAFE!!!
-    }
-
-    public function getClientOriginalName() {
-        //echo "original=" . $this->meta['name'];
-        //print_r( $this->meta );
-        return $this->meta['name'];
-    }
-
-    public function getClientOriginalExtension() {
-        return pathinfo($this->meta['name'], PATHINFO_EXTENSION);
-    }
-
-    public function getRealPath() {
-        return realpath($this->path);
-    }
-
-    public function getSize() {
-        return filesize($this->path);
-    }
-}
-
+/**
+ * Here comes some CORS (Cross-Orgin-Resource-Scripting)
+ * tweakin to allow access from other domains.
+ **/
 header( 'Content-Type: text/json; charset=utf-8' );
 header( 'Access-Control-Allow-Origin: *', true );
 header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Cache-Control, Accept, Origin, X-Session-ID, Access-Control-Allow-Headers, x-csrf-token', true );
-//header('Access-Control-Allow-Methods: POST,PUT,GET,OPTIONS' ); // GET,POST,PUT,HEAD,DELETE,TRACE,COPY,LOCK,MKCOL,MOVE,PROPFIND,PROPPATCH,UNLOCK,REPORT,MKACTIVITY,CHECKOUT,MERGE,M-SEARCH,NOTIFY,SUBSCRIBE,UNSUBSCRIBE,PATCH' );
-//header('Access-Control-Allow-Credentials: false', true );
-//header('Access-Control-Max-Age: 1000', true ); // 1728000' ); // 1000' );
-
 // Some jQuery libraries such as Dropzone also send an OPTIONS request
 if( $_SERVER['REQUEST_METHOD'] == 'OPTIONS' ) {
-    //header( 'HTTP/1.1 200 OK' );
     header( 'Allow: POST,PUT,GET,OPTIONS', true );
-    //echo "POST";
     die();
 }
 
+
+/**
+ * Here starts the acual action ^^
+ * -------------------------------
+ **/
 if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
     header( 'HTTP/1.1 400 Bad Request' );
     echo json_encode( array( 'message' => "Request method must be POST." ) );
@@ -142,7 +99,7 @@ if( !$_FILES || count($_FILES) == 0 ) {
 }
 
 /**
- * Found at
+ * Function found at
  *    http://stackoverflow.com/questions/2021624/string-sanitizer-for-filename
  *
  * 1) Strip HTML Tags
@@ -168,8 +125,8 @@ function normalizeString( $str = '' ) {
     return $str;
 }
 
-$uploader = new Imageupload();
-$result = array();
+$uploader  = new Imageupload();
+$result    = array();
 $cleanName = null;
 foreach( $_FILES as $key => $file ) {
     $cleanName = normalizeString( $file['name'] );
@@ -200,7 +157,12 @@ foreach( $result as $index => $file ) {
     $json[] = $tmp;
 }
 
-mail( 'info@int2byte.de', 'File uploaded ('.$cleanName.')', json_encode( $result, JSON_PRETTY_PRINT ) );
+
+// Email address configured?
+$mailto = _env('MAILTO',false);
+if( $mailto )
+    mail( $mailto, 'File uploaded ('.$cleanName.')', json_encode( $result, JSON_PRETTY_PRINT ) );
+
 
 echo json_encode( $json, JSON_PRETTY_PRINT );
 

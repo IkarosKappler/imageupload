@@ -68,5 +68,9 @@ CREATE TABLE IF NOT EXISTS `uploads` (
 
 Changelog
 ---------
+[2017-01-31]
+ * Optimized the code in imageupload.ajax.php.
+ * Optimized the code for php >= 7.0.
+ 
 [2017-01-16]
  * Added the 'referrer' field to the database.
