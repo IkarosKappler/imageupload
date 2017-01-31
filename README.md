@@ -7,6 +7,24 @@ It uses the laravel/eloquent framework for database access.
 
 Files
 -----
+.env
+.env_example
+
+```text
+; A coma separated list of allowed referers for cross-origin requests.
+; Examples:
+;  CORS_REFERERS=yourdomain.net
+;  CORS_REFERERS=yourcomain.net,otherdomain.org
+
+; CORS_REFERERS=
+
+; Put an email address here for info mails each time a file was uploaded.
+; Example:
+;  MAILTO=info@yourserver.net
+; MAILTO=
+```
+
+
  ./database/.env
 
 ```text
