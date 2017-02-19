@@ -33,9 +33,9 @@ if( count($_ORIGIN_WHITELIST) > 0 && array_key_exists('HTTP_REFERER',$_SERVER) &
         }
     }
     if( !$validReferer ) {
+        // BUG:
         // SOME BROWSERS SEND A PREFLIGHT 'OPTIONS' REQUEST FIRST.
         // VALIDATION FAILS IN THIS CASE.
-        
         //header( 'HTTP/1.1 401 Unauthorized' );
         //die( 'Unauthorized referer: ' . $_SERVER['HTTP_REFERER'] . '.' );
     }
@@ -51,10 +51,10 @@ require_once( "../database/bootstrap/autoload.php" );
 $list = DB::table('uploads')
     ->where('remote_address',$_SERVER['REMOTE_ADDR'])
     ->where('created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 5 MINUTE)'))
-    ->take(11)
+    ->take(21)
     ->get();
 
-if( count($list) > 10 ) {
+if( count($list) > 20 ) {
     header( 'HTTP/1.1 449 Too Many Requests' );
     echo json_encode( array( 'message' => 'Too many requests. Try again in 5 minutes.' ) );
     die();
@@ -164,6 +164,14 @@ if( $mailto )
     mail( $mailto, 'File uploaded ('.$cleanName.')', json_encode( $result, JSON_PRETTY_PRINT ) );
 
 
+// Print the result.
 echo json_encode( $json, JSON_PRETTY_PRINT );
+
+
+// After all clean up old IP addresses that are older than one month
+// (we do not store them forever)
+$list = DB::table('uploads')
+    ->where('created_at', '<', DB::raw('DATE_SUB(NOW(), INTERVAL 1 MONTH)'))
+    ->update( ['remote_address' => ''] );
 
 ?>

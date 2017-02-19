@@ -86,6 +86,13 @@ CREATE TABLE IF NOT EXISTS `uploads` (
 
 Changelog
 ---------
+[2017-02-19]
+ * Purging old IP addresses (older than one month) now.
+
+[2017-02-12]
+ * Added a simple .env file reader.
+ * Added .env file for easy configuration (in the root directory).
+
 [2017-01-31]
  * Optimized the code in imageupload.ajax.php.
  * Optimized the code for php >= 7.0.
