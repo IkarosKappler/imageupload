@@ -32,15 +32,14 @@ class Imageupload {
       $this->uribase = Config::get('imageupload.uribase', public_uri().'/uploads/images');
       $this->fileowner = Config::get('imageupload.fileowner', null );
       $this->filegroup = Config::get('imageupload.filegroup', null );
-      //$this->fileperms 
           
       // Now create the instance
-      // HACKED
-           if( $this->library == 'imagick_raw' ) $this->imagine = new \Imagick();
-      else if($this->library == 'imagick') $this->imagine = new \Imagine\Imagick\Imagine();
-      elseif ($this->library == 'gmagick') $this->imagine = new \Imagine\Gmagick\Imagine();
-      elseif ($this->library == 'gd')      $this->imagine = new \Imagine\Gd\Imagine();
-      else                                 $this->imagine = new \Imagine\Gd\Imagine();
+      // This code differs the original laravel class.
+          if ($this->library == 'imagick_raw') $this->imagine = new \Imagick();
+      elseif ($this->library == 'imagick')     $this->imagine = new \Imagine\Imagick\Imagine();
+      elseif ($this->library == 'gmagick')     $this->imagine = new \Imagine\Gmagick\Imagine();
+      elseif ($this->library == 'gd')          $this->imagine = new \Imagine\Gd\Imagine();
+      else                                     $this->imagine = new \Imagine\Gd\Imagine();
     }
   }
 
@@ -54,7 +53,6 @@ class Imageupload {
         File::makeDirectory($path, 0777, true);
         return true;
       } catch (\Exception $e) {
-          //Log::error('Imageupload: ' . $e->getMessage());
           echo "Failed to created directory: " . $e->getMessage();
         $this->results['error'] = $e->getMessage();
         return false;
@@ -72,7 +70,6 @@ class Imageupload {
   }
 
   public function upload($filesource, $newfilename=null, $dir=null) {
-      //echo "newfilename=" . $newfilename . "\n";
     $isPathOk = $this->checkPathIsOk($this->uploadpath,$dir);
     $isImage = $this->checkIsImage($filesource);
 
@@ -86,7 +83,7 @@ class Imageupload {
         $this->results['original_filesize']  = $filesource->getSize();
         $this->results['original_mime']      = $filesource->getMimeType();
         $this->results['exif']               = $this->getExif($filesource->getRealPath());
-        $this->results['uri']                = $this->uribase . '/' . $newfilename; // $filesource->getClientOriginalName();
+        $this->results['uri']                = $this->uribase . '/' . $newfilename; 
                 
         switch ($this->newfilename) {
           case 'hash':
@@ -163,27 +160,24 @@ class Imageupload {
     if( !$height ) $height = $width;
 
     $suffix = trim($suffix);
-
-    //echo "basename=" . $this->results['basename'] . "\n";
     $path = $this->results['path'] . ($this->suffix == false ? '/'.trim($suffix,'/') : '');
     $name = $this->cropExtension($this->results['basename']) . ($this->suffix == true ? '_'.trim($suffix,'/') : '') . '.' . $this->results['original_extension'];
 
     $pathname = $path . '/' . $name;
 
-    //print_r($width.' '.$height.' '.$crop);
-
     try {
       $isPathOk = $this->checkPathIsOk($this->results['path'],($this->suffix == false ? $suffix : ''));
 
       if ($isPathOk) {
-          // This is the original implementation from the Laravel class ... DAFUQ??!
+          // This is the original implementation from the Laravel class ... ??!
           //$size = new \Imagine\Image\Box($width, $height);
           //$mode = $crop ? \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND : \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
           //$newfile = $this->imagine->open($filesource)->thumbnail($size, $mode)->save($pathname,['quality'=>$this->quality]);
 
           // These three lines are my implementation.
           $tmp = new Imagick( $filesource );
-          $tmp->thumbnailImage( $width, $height );
+          if( $crop ) $tmp->cropThumbnailImage( $width, $height );
+          else        $tmp->thumbnailImage( $width, $height, true ); // bestfit?
           $tmp->writeImage( $pathname );
 
           

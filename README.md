@@ -86,6 +86,10 @@ CREATE TABLE IF NOT EXISTS `uploads` (
 
 Changelog
 ---------
+[2017-03-07]
+ * Added the option to 'crop' thumbails to the required size.
+ * Changed the thumbail size to 'bestfit' for non-crop resizing (keeps aspect ratio).
+
 [2017-02-19]
  * Purging old IP addresses (older than one month) now.
 

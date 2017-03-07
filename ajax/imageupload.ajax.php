@@ -83,7 +83,7 @@ if( $_SERVER['REQUEST_METHOD'] == 'OPTIONS' ) {
 
 
 /**
- * Here starts the acual action ^^
+ * Here starts the actual magic ^^
  * -------------------------------
  **/
 if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
@@ -130,9 +130,9 @@ $result    = array();
 $cleanName = null;
 foreach( $_FILES as $key => $file ) {
     $cleanName = normalizeString( $file['name'] );
-    $uploader->results['original_filename'] = $cleanName; // $file['name'];
+    $uploader->results['original_filename'] = $cleanName;
     $result[] = $uploader->upload( new File($file['tmp_name'],$file),
-                                   date('Ymd-His') . '-' . $cleanName // $file['name']
+                                   date('Ymd-His') . '-' . $cleanName
     );
 }
 
