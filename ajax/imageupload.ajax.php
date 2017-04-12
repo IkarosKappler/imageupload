@@ -11,7 +11,6 @@
  **/
 
 
-
 require_once( "../env.inc.php" );
 $envErrors = false;
 try { mkenv( "../.env" ); }
@@ -154,6 +153,12 @@ foreach( $result as $index => $file ) {
             $tmp['dimensions'][$dname] = array( 'uri' => $dim['uri'], 'width' => $dim['width'], 'height' => $dim['height'] );
         }
     }
+
+    // Add icon path
+    $iconPath = _env('ICONPATH','/img/icon/').strtolower($file['original_extension']).'.png';
+    if( file_exists('..'.$iconPath) ) $tmp['icon_uri'] = $iconPath;
+    else                              $tmp['icon_uri'] = _env('ICONPATH','/img/icon/').'_blank.png';
+    
     $json[] = $tmp;
 }
 
