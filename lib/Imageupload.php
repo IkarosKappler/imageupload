@@ -60,7 +60,7 @@ class Imageupload {
     }
   }
   
-  private function checkIsImage($filesource)
+  public function checkIsImage($filesource)
   {
     if (substr($filesource->getMimeType(), 0, 5) == 'image') {
         return true;
@@ -69,7 +69,7 @@ class Imageupload {
     }
   }
 
-  public function upload($filesource, $newfilename=null, $dir=null) {
+    public function upload($filesource, $newfilename=null, $dir=null) {
     $isPathOk = $this->checkPathIsOk($this->uploadpath,$dir);
     $isImage = $this->checkIsImage($filesource);
 
@@ -110,13 +110,15 @@ class Imageupload {
           $this->results['original_filedir'] = str_replace(public_path().'/', '', $this->results['original_filepath']);
           $this->results['basename'] = pathinfo($this->results['original_filepath'],PATHINFO_FILENAME);
 
-          list($width, $height) = getimagesize($this->results['original_filepath']);
-          $this->results['original_width'] = $width;
-          $this->results['original_height'] = $height;
+          if( $isImage ) {
+              list($width, $height) = getimagesize($this->results['original_filepath']);
+              $this->results['original_width'] = $width;
+              $this->results['original_height'] = $height;
 
-          $this->setFilePermissions( $this->results['path'] . DIRECTORY_SEPARATOR . $this->results['filename'] );
+              $this->setFilePermissions( $this->results['path'] . DIRECTORY_SEPARATOR . $this->results['filename'] );
 
-          $this->createDimensions($this->results['original_filepath']);
+              $this->createDimensions($this->results['original_filepath']);
+          }
         } else {
           $this->results['error'] = 'File ' . $this->results['original_filename '].' is not uploaded.';
           Log::error('Imageupload: ' . $this->results['error']);

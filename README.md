@@ -110,6 +110,8 @@ Changelog
  * Added an icon set for non-image files ('Free-file-icons' by teambox. Thank you!).
  * Added the ICONPATH to the .env file.
  * Added the 'icon_path' attribute to the JSON response.
+ * Added the IMAGE_FILES_ONLY to the .env file (if set to false the uploader also
+   accepts non-image files; it does not create any thumbnails then).
 
 [2017-03-07]
  * Added the option to 'crop' thumbails to the required size.

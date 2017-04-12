@@ -128,13 +128,17 @@ $uploader  = new Imageupload();
 $result    = array();
 $cleanName = null;
 foreach( $_FILES as $key => $file ) {
-    $cleanName = normalizeString( $file['name'] );
-    $uploader->results['original_filename'] = $cleanName;
-    $result[] = $uploader->upload( new File($file['tmp_name'],$file),
-                                   date('Ymd-His') . '-' . $cleanName
-    );
+    $fileSource =  new File($file['tmp_name'],$file);
+    if( $uploader->checkIsImage($fileSource)
+        || _env('IMAGE_FILES_ONLY','true') != 'true' )
+      { // Urgs ... string check here?
+        $cleanName = normalizeString( $file['name'] );
+        $uploader->results['original_filename'] = $cleanName;
+        $result[] = $uploader->upload( $fileSource, // new File($file['tmp_name'],$file),
+                                       date('Ymd-His') . '-' . $cleanName
+        );
+    }    
 }
-
 
 // Keep Track of all uploads in the database and
 // build a small JSON response.
