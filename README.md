@@ -26,7 +26,7 @@ Files
 
 
  ./database/.env
-
+ 
 ```text
  This file should contain your DB credentials
   APP_KEY=SomeRandomString
@@ -36,6 +36,25 @@ Files
   DB_HOST=
 ```
 
+Directories
+-----------
+
+ public/
+The upload directory.
+
+Disallow script execution in your upload directory!
+---------------------------------------------------
+ public/.htaccess
+
+```text
+Options -Indexes
+php_flag engine off
+```
+
+Or a better way: disable via your webserver configuration.
+
+
+
 Basic Setup
 -----------
 ```html
@@ -43,6 +62,7 @@ Basic Setup
       <form id="upload-widget" method="post" action="../ajax/imageupload.ajax.php" class="dropzone">
       </form>
 ```
+
 
 Javascript Uploader
 -------------------
@@ -86,6 +106,11 @@ CREATE TABLE IF NOT EXISTS `uploads` (
 
 Changelog
 ---------
+[2017-04-12]
+ * Added an icon set for non-image files ('Free-file-icons' by teambox. Thank you!).
+ * Added the ICONPATH to the .env file.
+ * Added the 'icon_path' attribute to the JSON response.
+
 [2017-03-07]
  * Added the option to 'crop' thumbails to the required size.
  * Changed the thumbail size to 'bestfit' for non-crop resizing (keeps aspect ratio).
@@ -103,3 +128,12 @@ Changelog
  
 [2017-01-16]
  * Added the 'referrer' field to the database.
+
+
+
+
+Uses
+----
+* Free-file-icons
+  https://github.com/teambox/Free-file-icons
+  
